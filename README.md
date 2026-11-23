@@ -59,6 +59,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 > Ці значення можна знайти у вашому Supabase проекті: **Settings → API**
 
+### Крок 4: Налаштування бази даних
+
+У Supabase Dashboard відкрийте **SQL Editor**, створіть запит, вставте вміст
+файлу `supabase/migrations/20261123121500_create_journal_entries.sql` і натисніть
+**Run**. Міграція створює таблицю записів та Row Level Security політики, які
+дозволяють кожному користувачу працювати лише з власними записами.
+
 ### Крок 5: Запуск
 
 ```bash
@@ -95,7 +102,8 @@ npm run dev
 │   ├── actions.ts
 │   ├── types.ts
 │   └── utils.ts
-├── scripts/
-│   └── 001_create_journal_entries.sql
+├── supabase/
+│   └── migrations/
+│       └── 20261123121500_create_journal_entries.sql
 └── middleware.ts
 ```
