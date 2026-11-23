@@ -24,15 +24,7 @@ import {
 import { updateEntry, deleteEntry } from "@/lib/actions";
 import { MoreHorizontal, Pencil, Trash2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const moodEmojis: Record<string, string> = {
-  happy: "😊",
-  calm: "😌",
-  neutral: "😐",
-  excited: "🤩",
-  sad: "😢",
-  anxious: "😰",
-};
+import { moods } from "./moods";
 
 interface EntryCardProps {
   entry: JournalEntry;
@@ -46,6 +38,7 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
   const [content, setContent] = useState(entry.content);
   const [isPending, startTransition] = useTransition();
   const [actionError, setActionError] = useState<string | null>(null);
+  const mood = moods.find((option) => option.value === entry.mood);
 
   const formattedDate = new Date(entry.created_at).toLocaleDateString("uk-UA", {
     day: "numeric",
@@ -152,9 +145,9 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
                 <time className="text-sm text-muted-foreground">
                   {formattedDate} о {formattedTime}
                 </time>
-                {entry.mood && moodEmojis[entry.mood] && (
-                  <span className="text-lg" title={entry.mood}>
-                    {moodEmojis[entry.mood]}
+                {mood && (
+                  <span className="text-lg" title={mood.label}>
+                    {mood.emoji}
                   </span>
                 )}
               </div>

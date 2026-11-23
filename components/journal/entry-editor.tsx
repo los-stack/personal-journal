@@ -7,15 +7,7 @@ import { Input } from "@/components/ui/input";
 import { createEntry } from "@/lib/actions";
 import { PenLine, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const moods = [
-  { value: "happy", label: "Радість", emoji: "😊" },
-  { value: "calm", label: "Спокій", emoji: "😌" },
-  { value: "neutral", label: "Нейтрально", emoji: "😐" },
-  { value: "excited", label: "Схвильований", emoji: "🤩" },
-  { value: "sad", label: "Сум", emoji: "😢" },
-  { value: "anxious", label: "Тривога", emoji: "😰" },
-];
+import { moods } from "./moods";
 
 interface EntryEditorProps {
   onSuccess?: () => void;
