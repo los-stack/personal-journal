@@ -45,6 +45,7 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
   const [title, setTitle] = useState(entry.title || "");
   const [content, setContent] = useState(entry.content);
   const [isPending, startTransition] = useTransition();
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const formattedDate = new Date(entry.created_at).toLocaleDateString("uk-UA", {
     day: "numeric",
@@ -58,6 +59,12 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
   });
 
   const handleSave = () => {
+    if (!content.trim()) {
+      setActionError("Напишіть щось перед збереженням");
+      return;
+    }
+
+    setActionError(null);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
@@ -68,16 +75,21 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
       if (result.success) {
         setIsEditing(false);
         onUpdate?.();
+      } else {
+        setActionError(result.error || "Не вдалося оновити запис");
       }
     });
   };
 
   const handleDelete = () => {
+    setActionError(null);
     startTransition(async () => {
       const result = await deleteEntry(entry.id);
       if (result.success) {
         setShowDeleteDialog(false);
         onUpdate?.();
+      } else {
+        setActionError(result.error || "Не вдалося видалити запис");
       }
     });
   };
@@ -101,11 +113,13 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
             <Input
               placeholder="Заголовок"
               value={title}
+              maxLength={120}
               onChange={(e) => setTitle(e.target.value)}
               className="border-0 bg-transparent px-0 text-lg font-medium focus-visible:ring-0"
             />
             <Textarea
               value={content}
+              maxLength={10000}
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[100px] resize-none border-0 bg-transparent px-0 font-serif text-base leading-relaxed focus-visible:ring-0"
               autoFocus
@@ -125,6 +139,11 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
                 )}
               </Button>
             </div>
+            {actionError && (
+              <p role="alert" className="text-sm text-destructive">
+                {actionError}
+              </p>
+            )}
           </div>
         ) : (
           <>
@@ -180,7 +199,13 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
         )}
       </article>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          setShowDeleteDialog(open);
+          if (open) setActionError(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Видалити запис?</AlertDialogTitle>
@@ -188,6 +213,11 @@ export function EntryCard({ entry, onUpdate }: EntryCardProps) {
               Ця дія незворотна. Запис буде видалено назавжди.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {actionError && (
+            <p role="alert" className="text-sm text-destructive">
+              {actionError}
+            </p>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Скасувати</AlertDialogCancel>
             <AlertDialogAction

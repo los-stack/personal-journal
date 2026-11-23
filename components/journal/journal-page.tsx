@@ -7,11 +7,15 @@ import { EntryEditor } from "./entry-editor";
 import { EntryList } from "./entry-list";
 import { getEntries } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 export function JournalPage() {
-  const { data: entries, isLoading, mutate } = useSWR("entries", getEntries, {
-    revalidateOnFocus: false,
-  });
+  const { data: entries, error, isLoading, mutate } = useSWR(
+    "entries",
+    getEntries,
+    { revalidateOnFocus: false },
+  );
 
   const handleRefresh = useCallback(() => {
     mutate();
@@ -27,11 +31,25 @@ export function JournalPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
+          <div
+            className="flex items-center justify-center py-16"
+            role="status"
+            aria-label="Завантаження записів"
+          >
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
+        ) : error ? (
+          <Alert variant="destructive">
+            <AlertTitle>Не вдалося завантажити записи</AlertTitle>
+            <AlertDescription>
+              <p>{error.message}</p>
+              <Button variant="outline" size="sm" onClick={() => mutate()}>
+                Спробувати ще раз
+              </Button>
+            </AlertDescription>
+          </Alert>
         ) : (
-          <EntryList entries={entries || []} onUpdate={handleRefresh} />
+          <EntryList entries={entries ?? []} onUpdate={handleRefresh} />
         )}
       </main>
     </div>

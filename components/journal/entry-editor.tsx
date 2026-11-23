@@ -87,6 +87,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         <Input
           placeholder="Заголовок (необов'язково)"
           value={title}
+          maxLength={120}
           onChange={(e) => setTitle(e.target.value)}
           className="border-0 bg-transparent px-0 text-lg font-medium placeholder:text-muted-foreground/60 focus-visible:ring-0"
         />
@@ -94,6 +95,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         <Textarea
           placeholder="Почніть писати..."
           value={content}
+          maxLength={10000}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[150px] resize-none border-0 bg-transparent px-0 font-serif text-base leading-relaxed placeholder:text-muted-foreground/60 focus-visible:ring-0"
           autoFocus
@@ -108,6 +110,8 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
             {moods.map((mood) => (
               <button
                 key={mood.value}
+                type="button"
+                aria-pressed={selectedMood === mood.value}
                 onClick={() =>
                   setSelectedMood(selectedMood === mood.value ? null : mood.value)
                 }
@@ -126,7 +130,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         </div>
 
         {error && (
-          <p className="text-sm text-destructive">{error}</p>
+          <p role="alert" className="text-sm text-destructive">{error}</p>
         )}
 
         <div className="flex items-center justify-end gap-2 pt-2">
