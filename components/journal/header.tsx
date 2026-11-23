@@ -1,14 +1,25 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut, BookOpen } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  BarChart3,
+  BookOpen,
+  LogOut,
+  Moon,
+  PenLine,
+  Sun,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -19,17 +30,46 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
             <BookOpen className="h-5 w-5 text-primary" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          <span className="hidden text-xl font-semibold tracking-tight text-foreground sm:inline">
             Personal Journal
-          </h1>
+          </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <nav aria-label="Основна навігація" className="flex items-center gap-1">
+          <Link
+            href="/"
+            aria-current={pathname === "/" ? "page" : undefined}
+            className={cn(
+              "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              pathname === "/"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground",
+            )}
+          >
+            <PenLine className="h-4 w-4" />
+            Журнал
+          </Link>
+          <Link
+            href="/insights"
+            aria-current={pathname === "/insights" ? "page" : undefined}
+            className={cn(
+              "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              pathname === "/insights"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground",
+            )}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Огляд
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
