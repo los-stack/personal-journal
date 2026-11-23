@@ -69,6 +69,12 @@ export async function createEntry(formData: FormData): Promise<{ success: boolea
 
   if (error) {
     console.error("Error creating entry:", error);
+    if (error.code === "PGRST205") {
+      return {
+        success: false,
+        error: "Таблицю записів не налаштовано. Виконайте SQL-міграцію з README.",
+      };
+    }
     return { success: false, error: "Не вдалося створити запис" };
   }
 
