@@ -66,7 +66,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 **Run**. Міграція створює таблицю записів та Row Level Security політики, які
 дозволяють кожному користувачу працювати лише з власними записами.
 
-### Крок 5: Запуск
+### Крок 5: Налаштування посилань авторизації
+
+У Supabase Dashboard відкрийте **Authentication → URL Configuration** і додайте
+`http://localhost:3000/**` до **Redirect URLs**. Для production окремо додайте
+URL вашого сайту.
+
+### Крок 6: Запуск
 
 ```bash
 npm run dev
@@ -79,15 +85,21 @@ npm run dev
 ```
 ├── app/
 │   ├── auth/
+│   │   ├── callback/
+│   │   ├── error/
+│   │   ├── forgot-password/
 │   │   ├── login/
 │   │   ├── sign-up/
 │   │   ├── sign-up-success/
-│   │   └── error/
+│   │   └── update-password/
+│   ├── insights/
+│   ├── settings/
 │   ├── layout.tsx
 │   ├── page.tsx
 │   └── globals.css
 ├── components/
 │   ├── journal/
+│   │   ├── account-settings.tsx
 │   │   ├── header.tsx
 │   │   ├── entry-editor.tsx
 │   │   ├── entry-card.tsx

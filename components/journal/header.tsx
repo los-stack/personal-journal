@@ -11,6 +11,7 @@ import {
   LogOut,
   Moon,
   PenLine,
+  Settings,
   Sun,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -66,6 +67,19 @@ export function Header() {
           >
             <BarChart3 className="h-4 w-4" />
             Огляд
+          </Link>
+          <Link
+            href="/settings"
+            aria-current={pathname.startsWith("/settings") ? "page" : undefined}
+            className={cn(
+              "inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              pathname.startsWith("/settings")
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground",
+            )}
+          >
+            <Settings className="h-4 w-4" />
+            Профіль
           </Link>
         </nav>
 
