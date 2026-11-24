@@ -162,7 +162,25 @@ export function JournalPage({ displayName }: { displayName: string }) {
     printWindow.document.write(createJournalPrintHtml(filteredEntries));
     printWindow.document.close();
     printWindow.focus();
-    printWindow.setTimeout(() => printWindow.print(), 300);
+    const imagesReady = Promise.all(
+      Array.from(printWindow.document.images).map(
+        (image) =>
+          new Promise<void>((resolve) => {
+            if (image.complete) {
+              resolve();
+              return;
+            }
+            image.onload = () => resolve();
+            image.onerror = () => resolve();
+          }),
+      ),
+    );
+    const imageTimeout = new Promise<void>((resolve) => {
+      printWindow.setTimeout(resolve, 5000);
+    });
+    void Promise.race([imagesReady, imageTimeout]).then(() => {
+      if (!printWindow.closed) printWindow.print();
+    });
   };
 
   return (

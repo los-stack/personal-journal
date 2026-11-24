@@ -19,6 +19,9 @@ export function createJournalMarkdown(entries: JournalEntry[]) {
       ...(entry.tags?.length
         ? [`- Теги: ${entry.tags.map((tag) => `#${tag}`).join(", ")}`]
         : []),
+      ...(entry.images?.length
+        ? [`- Фото: ${entry.images.length} (не включені у текстовий експорт)`]
+        : []),
     ];
 
     return [`## ${title}`, "", ...metadata, "", entry.content.trim()].join("\n");

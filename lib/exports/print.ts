@@ -33,6 +33,7 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
       const mood = moods.find((option) => option.value === entry.mood);
       const title = entry.title?.trim() || "Запис без назви";
       const tags = entry.tags ?? [];
+      const images = entry.images ?? [];
 
       return `
         <article class="entry">
@@ -56,6 +57,19 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
               : ""
           }
           <p>${escapeHtml(entry.content.trim())}</p>
+          ${
+            images.length
+              ? `<div class="entry-images">${images
+                  .map(
+                    (image, index) => `
+                      <figure>
+                        <img src="${escapeHtml(image.url)}" alt="Фото ${index + 1} до запису">
+                        <figcaption>Фото ${index + 1}</figcaption>
+                      </figure>`,
+                  )
+                  .join("")}</div>`
+              : ""
+          }
         </article>`;
     })
     .join("");
@@ -129,6 +143,25 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
         margin: 0 0 10px;
         color: #866b50;
         font-size: 12px;
+      }
+      .entry-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .entry-images figure { margin: 0; break-inside: avoid; }
+      .entry-images img {
+        display: block;
+        width: 100%;
+        max-height: 360px;
+        border-radius: 8px;
+        object-fit: contain;
+      }
+      .entry-images figcaption {
+        margin-top: 4px;
+        color: #746d64;
+        font-size: 11px;
       }
       h2 {
         margin: 10px 0 8px;

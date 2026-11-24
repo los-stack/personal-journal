@@ -8,6 +8,13 @@ export interface JournalEntry {
   is_pinned: boolean;
   created_at: string;
   updated_at: string;
+  images?: JournalEntryImage[];
+}
+
+export interface JournalEntryImage {
+  id: string;
+  url: string;
+  created_at: string;
 }
 
 export type EntryMood = "happy" | "neutral" | "sad" | "excited" | "calm" | "anxious" | null;

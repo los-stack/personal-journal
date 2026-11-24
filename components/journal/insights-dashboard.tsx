@@ -186,8 +186,8 @@ function ActivityChart({ entries }: { entries: JournalEntry[] }) {
 
 export function InsightsDashboard({ displayName }: { displayName: string }) {
   const { data: entries, error, isLoading, mutate } = useSWR(
-    "entries",
-    getEntries,
+    "entries-insights",
+    () => getEntries({ includeImages: false }),
     { revalidateOnFocus: false },
   );
   const journalEntries = entries ?? [];
