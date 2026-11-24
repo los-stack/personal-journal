@@ -8,6 +8,7 @@ import { createEntry } from "@/lib/actions";
 import { PenLine, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { moods } from "./moods";
+import { TagInput } from "./tag-input";
 
 interface EntryEditorProps {
   onSuccess?: () => void;
@@ -18,6 +19,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -33,6 +35,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
     if (title.trim()) formData.append("title", title.trim());
     formData.append("content", content);
     if (selectedMood) formData.append("mood", selectedMood);
+    tags.forEach((tag) => formData.append("tags", tag));
 
     startTransition(async () => {
       const result = await createEntry(formData);
@@ -41,6 +44,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         setTitle("");
         setContent("");
         setSelectedMood(null);
+        setTags([]);
         setIsExpanded(false);
         onSuccess?.();
       } else {
@@ -53,6 +57,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
     setTitle("");
     setContent("");
     setSelectedMood(null);
+    setTags([]);
     setError(null);
     setIsExpanded(false);
   };
@@ -119,6 +124,11 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-muted-foreground">Теги</div>
+          <TagInput tags={tags} onChange={setTags} disabled={isPending} />
         </div>
 
         {error && (

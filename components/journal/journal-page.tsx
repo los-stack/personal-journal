@@ -48,6 +48,7 @@ import { moods } from "./moods";
 export function JournalPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMood, setSelectedMood] = useState("all");
+  const [selectedTag, setSelectedTag] = useState("all");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [exportError, setExportError] = useState<string | null>(null);
   const { data: entries, error, isLoading, mutate } = useSWR(
@@ -60,17 +61,27 @@ export function JournalPage() {
     mutate();
   }, [mutate]);
 
+  const availableTags = useMemo(
+    () =>
+      [...new Set((entries ?? []).flatMap((entry) => entry.tags ?? []))].sort(
+        (a, b) => a.localeCompare(b, "uk-UA"),
+      ),
+    [entries],
+  );
+
   const filteredEntries = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("uk-UA");
 
     return (entries ?? []).filter((entry) => {
       const matchesQuery =
         !query ||
-        `${entry.title ?? ""}\n${entry.content}`
+        `${entry.title ?? ""}\n${entry.content}\n${(entry.tags ?? []).join(" ")}`
           .toLocaleLowerCase("uk-UA")
           .includes(query);
       const matchesMood =
         selectedMood === "all" || entry.mood === selectedMood;
+      const matchesTag =
+        selectedTag === "all" || (entry.tags ?? []).includes(selectedTag);
       const entryDate = new Date(entry.created_at);
       const rangeStart = dateRange?.from
         ? new Date(
@@ -91,16 +102,20 @@ export function JournalPage() {
         (!rangeStart || entryDate >= rangeStart) &&
         (!rangeEnd || entryDate < rangeEnd);
 
-      return matchesQuery && matchesMood && matchesDate;
+      return matchesQuery && matchesMood && matchesTag && matchesDate;
     });
-  }, [entries, searchQuery, selectedMood, dateRange]);
+  }, [entries, searchQuery, selectedMood, selectedTag, dateRange]);
 
   const hasActiveFilters =
-    Boolean(searchQuery.trim()) || selectedMood !== "all" || Boolean(dateRange);
+    Boolean(searchQuery.trim()) ||
+    selectedMood !== "all" ||
+    selectedTag !== "all" ||
+    Boolean(dateRange);
 
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedMood("all");
+    setSelectedTag("all");
     setDateRange(undefined);
   };
 
@@ -154,14 +169,14 @@ export function JournalPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="mx-auto max-w-2xl px-4 py-8">
+      <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-8">
           <EntryEditor onSuccess={handleRefresh} />
         </div>
 
         {!isLoading && !error && entries && entries.length > 0 && (
           <div className="mb-6 space-y-3">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_190px_250px]">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_150px_150px_210px]">
               <div className="relative">
                 <Search
                   aria-hidden="true"
@@ -184,6 +199,19 @@ export function JournalPage() {
                   {moods.map((mood) => (
                     <SelectItem key={mood.value} value={mood.value}>
                       {mood.emoji} {mood.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={selectedTag} onValueChange={setSelectedTag}>
+                <SelectTrigger aria-label="Фільтр за тегом" className="w-full">
+                  <SelectValue placeholder="Усі теги" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Усі теги</SelectItem>
+                  {availableTags.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      #{tag}
                     </SelectItem>
                   ))}
                 </SelectContent>

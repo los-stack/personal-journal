@@ -32,6 +32,7 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
     .map((entry) => {
       const mood = moods.find((option) => option.value === entry.mood);
       const title = entry.title?.trim() || "Запис без назви";
+      const tags = entry.tags ?? [];
 
       return `
         <article class="entry">
@@ -42,8 +43,18 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
                 ? `<span class="mood">${escapeHtml(`${mood.emoji} ${mood.label}`)}</span>`
                 : ""
             }
+            ${
+              entry.is_pinned
+                ? '<span class="pinned">Закріплено</span>'
+                : ""
+            }
           </div>
           <h2>${escapeHtml(title)}</h2>
+          ${
+            tags.length
+              ? `<p class="tags">${tags.map((tag) => `#${escapeHtml(tag)}`).join(" · ")}</p>`
+              : ""
+          }
           <p>${escapeHtml(entry.content.trim())}</p>
         </article>`;
     })
@@ -109,6 +120,15 @@ export function createJournalPrintHtml(entries: JournalEntry[]) {
         border-radius: 999px;
         background: #f5f1eb;
         color: #5e5144;
+      }
+      .pinned {
+        color: #866b50;
+        font-weight: 600;
+      }
+      .entry .tags {
+        margin: 0 0 10px;
+        color: #866b50;
+        font-size: 12px;
       }
       h2 {
         margin: 10px 0 8px;

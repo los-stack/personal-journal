@@ -29,7 +29,7 @@ export function EntryList({
             Нічого не знайдено
           </h3>
           <p className="mb-4 max-w-sm text-muted-foreground">
-            Спробуйте змінити пошуковий запит або вибрати інший настрій.
+            Спробуйте змінити пошуковий запит, настрій, тег або період.
           </p>
           <Button variant="outline" onClick={onClearFilters}>
             Очистити фільтри
@@ -53,25 +53,39 @@ export function EntryList({
     );
   }
 
-  // Group entries by date
-  const groupedEntries = entries.reduce<Record<string, JournalEntry[]>>(
-    (groups, entry) => {
-      const date = new Date(entry.created_at).toLocaleDateString("uk-UA", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(entry);
-      return groups;
-    },
-    {}
-  );
+  const pinnedEntries = entries.filter((entry) => entry.is_pinned);
+  const groupedEntries = entries
+    .filter((entry) => !entry.is_pinned)
+    .reduce<Record<string, JournalEntry[]>>(
+      (groups, entry) => {
+        const date = new Date(entry.created_at).toLocaleDateString("uk-UA", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        if (!groups[date]) {
+          groups[date] = [];
+        }
+        groups[date].push(entry);
+        return groups;
+      },
+      {},
+    );
 
   return (
     <div className="space-y-8">
+      {pinnedEntries.length > 0 && (
+        <section>
+          <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+            Закріплені
+          </h2>
+          <div className="space-y-4">
+            {pinnedEntries.map((entry) => (
+              <EntryCard key={entry.id} entry={entry} onUpdate={onUpdate} />
+            ))}
+          </div>
+        </section>
+      )}
       {Object.entries(groupedEntries).map(([date, dateEntries]) => (
         <section key={date}>
           <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-muted-foreground">

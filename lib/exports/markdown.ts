@@ -15,6 +15,10 @@ export function createJournalMarkdown(entries: JournalEntry[]) {
     const metadata = [
       `- Дата: ${formatEntryDate(entry.created_at)}`,
       ...(mood ? [`- Настрій: ${mood.emoji} ${mood.label}`] : []),
+      ...(entry.is_pinned ? ["- Закріплено: так"] : []),
+      ...(entry.tags?.length
+        ? [`- Теги: ${entry.tags.map((tag) => `#${tag}`).join(", ")}`]
+        : []),
     ];
 
     return [`## ${title}`, "", ...metadata, "", entry.content.trim()].join("\n");
