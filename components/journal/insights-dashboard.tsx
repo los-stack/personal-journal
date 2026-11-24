@@ -184,7 +184,7 @@ function ActivityChart({ entries }: { entries: JournalEntry[] }) {
   );
 }
 
-export function InsightsDashboard() {
+export function InsightsDashboard({ displayName }: { displayName: string }) {
   const { data: entries, error, isLoading, mutate } = useSWR(
     "entries",
     getEntries,
@@ -201,7 +201,7 @@ export function InsightsDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header displayName={displayName} />
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-primary">Ваш журнал</p>

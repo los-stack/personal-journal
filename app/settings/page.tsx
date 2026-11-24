@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AccountSettings } from "@/components/journal/account-settings";
 import { Header } from "@/components/journal/header";
 import { createClient } from "@/lib/supabase/server";
+import { getProfileDisplayName } from "@/lib/profile";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -11,16 +12,11 @@ export default async function SettingsPage() {
 
   if (!user) redirect("/auth/login");
 
-  const displayName =
-    typeof user.user_metadata?.display_name === "string"
-      ? user.user_metadata.display_name
-      : typeof user.user_metadata?.full_name === "string"
-        ? user.user_metadata.full_name
-        : "";
+  const displayName = getProfileDisplayName(user);
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header displayName={displayName} />
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-primary">Ваш акаунт</p>

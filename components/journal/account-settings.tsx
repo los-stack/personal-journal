@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 interface AccountSettingsProps {
   displayName: string;
@@ -40,6 +41,7 @@ function Feedback({ feedback }: { feedback: FormFeedback | null }) {
 }
 
 export function AccountSettings({ displayName, email }: AccountSettingsProps) {
+  const router = useRouter();
   const [name, setName] = useState(displayName);
   const [newEmail, setNewEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -55,13 +57,18 @@ export function AccountSettings({ displayName, email }: AccountSettingsProps) {
     event.preventDefault();
     setProfileFeedback(null);
     setSavingProfile(true);
+    const updatedName = name.trim();
 
     const supabase = createClient();
     const { error } = await supabase.auth.updateUser({
-      data: { display_name: name.trim() },
+      data: { display_name: updatedName },
     });
 
     setSavingProfile(false);
+    if (!error) {
+      setName(updatedName);
+      router.refresh();
+    }
     setProfileFeedback(
       error
         ? { type: "error", message: error.message }
@@ -144,7 +151,7 @@ export function AccountSettings({ displayName, email }: AccountSettingsProps) {
             <div className="space-y-1">
               <CardTitle>Профіль</CardTitle>
               <CardDescription>
-                Ім’я відображається лише у вашому акаунті.
+                Ім’я відображається в навігації та налаштуваннях вашого акаунта.
               </CardDescription>
             </div>
           </div>

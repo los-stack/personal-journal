@@ -45,7 +45,7 @@ import { createJournalMarkdown } from "@/lib/exports/markdown";
 import { createJournalPrintHtml } from "@/lib/exports/print";
 import { moods } from "./moods";
 
-export function JournalPage() {
+export function JournalPage({ displayName }: { displayName: string }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMood, setSelectedMood] = useState("all");
   const [selectedTag, setSelectedTag] = useState("all");
@@ -167,7 +167,7 @@ export function JournalPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header displayName={displayName} />
 
       <main className="mx-auto max-w-3xl px-4 py-8">
         <div className="mb-8">
