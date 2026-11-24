@@ -1,15 +1,8 @@
 import React from "react"
 import type { Metadata, Viewport } from "next";
-import { Inter, Merriweather } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin", "cyrillic"] });
-const merriweather = Merriweather({
-  subsets: ["latin", "cyrillic"],
-  weight: ["300", "400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Personal Journal",

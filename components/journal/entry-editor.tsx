@@ -7,15 +7,8 @@ import { Input } from "@/components/ui/input";
 import { createEntry } from "@/lib/actions";
 import { PenLine, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const moods = [
-  { value: "happy", label: "Радість", emoji: "😊" },
-  { value: "calm", label: "Спокій", emoji: "😌" },
-  { value: "neutral", label: "Нейтрально", emoji: "😐" },
-  { value: "excited", label: "Схвильований", emoji: "🤩" },
-  { value: "sad", label: "Сум", emoji: "😢" },
-  { value: "anxious", label: "Тривога", emoji: "😰" },
-];
+import { moods } from "./moods";
+import { TagInput } from "./tag-input";
 
 interface EntryEditorProps {
   onSuccess?: () => void;
@@ -26,6 +19,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +35,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
     if (title.trim()) formData.append("title", title.trim());
     formData.append("content", content);
     if (selectedMood) formData.append("mood", selectedMood);
+    tags.forEach((tag) => formData.append("tags", tag));
 
     startTransition(async () => {
       const result = await createEntry(formData);
@@ -49,6 +44,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         setTitle("");
         setContent("");
         setSelectedMood(null);
+        setTags([]);
         setIsExpanded(false);
         onSuccess?.();
       } else {
@@ -61,6 +57,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
     setTitle("");
     setContent("");
     setSelectedMood(null);
+    setTags([]);
     setError(null);
     setIsExpanded(false);
   };
@@ -87,6 +84,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         <Input
           placeholder="Заголовок (необов'язково)"
           value={title}
+          maxLength={120}
           onChange={(e) => setTitle(e.target.value)}
           className="border-0 bg-transparent px-0 text-lg font-medium placeholder:text-muted-foreground/60 focus-visible:ring-0"
         />
@@ -94,6 +92,7 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
         <Textarea
           placeholder="Почніть писати..."
           value={content}
+          maxLength={10000}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[150px] resize-none border-0 bg-transparent px-0 font-serif text-base leading-relaxed placeholder:text-muted-foreground/60 focus-visible:ring-0"
           autoFocus
@@ -108,6 +107,8 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
             {moods.map((mood) => (
               <button
                 key={mood.value}
+                type="button"
+                aria-pressed={selectedMood === mood.value}
                 onClick={() =>
                   setSelectedMood(selectedMood === mood.value ? null : mood.value)
                 }
@@ -125,8 +126,13 @@ export function EntryEditor({ onSuccess }: EntryEditorProps) {
           </div>
         </div>
 
+        <div className="space-y-3">
+          <div className="text-sm font-medium text-muted-foreground">Теги</div>
+          <TagInput tags={tags} onChange={setTags} disabled={isPending} />
+        </div>
+
         {error && (
-          <p className="text-sm text-destructive">{error}</p>
+          <p role="alert" className="text-sm text-destructive">{error}</p>
         )}
 
         <div className="flex items-center justify-end gap-2 pt-2">
